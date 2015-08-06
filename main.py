@@ -1,4 +1,5 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
+import os
 import sys
 import random
 import pygame as pg
@@ -7,6 +8,7 @@ import pygame as pg
 import prepare
 import actors
 import level
+import products
 
 
 class App(object):
@@ -20,9 +22,9 @@ class App(object):
         self.fps = 60
         self.keys = pg.key.get_pressed()
         self.done = False
-        ship = random.choice(list(prepare.GFX["ships"].values()))
-        self.player = actors.Player((0,0), ship)
+        self.player = actors.Player((0,0), 0, products.make_ship(prepare.PLAYER_DEFAULT), None)
         self.level = level.Level(self.screen_rect.copy(), self.player)
+
 
     def event_loop(self):
         """
@@ -33,6 +35,10 @@ class App(object):
                 self.done = True
             elif event.type in (pg.KEYDOWN, pg.KEYUP):
                 self.keys = pg.key.get_pressed()
+                if event.type == pg.KEYUP:
+                    if event.key == pg.K_ESCAPE:
+                        self.done = True
+            self.player.get_event(event)
 
     def display_fps(self):
         """
@@ -42,12 +48,12 @@ class App(object):
         caption = template.format(prepare.CAPTION, self.clock.get_fps())
         pg.display.set_caption(caption)
 
-    def update(self):
+    def update(self, dt):
         """
         Update necessary elements; currently only the level.
         """
-        self.level.update(self.keys)
-        
+        self.level.update(self.keys, dt)
+
     def render(self):
         """
         Draw all elements.  Individual actor drawing handled by level instance.
@@ -61,10 +67,10 @@ class App(object):
         The main game loop.
         """
         while not self.done:
+            dt = self.clock.tick(self.fps)
             self.event_loop()
-            self.update()
+            self.update(dt)
             self.render()
-            self.clock.tick(self.fps)
             self.display_fps()
 
 

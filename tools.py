@@ -27,11 +27,21 @@ def load_all_gfx(directory, colorkey=None, accept=(".png",".jpg",".bmp")):
             graphics[name]=img
     return graphics
 
+def load_all_sounds(directory, accept=(".ogg", ".wav", ".mp3")):
+    """
+    Load sounds as mixer.Sound objects.
+    """
+    sounds = {}
+    for sound in os.listdir(directory):
+        name,ext = os.path.splitext(sound)
+        if ext.lower() in accept:
+            sounds[name]=pg.mixer.Sound(os.path.join(directory, sound))
+    return sounds
 
 def split_sheet(sheet, size, columns, rows):
     """
     Divide a loaded sprite sheet into subsurfaces.
-    
+
     The argument size is the width and height of each frame (w,h)
     columns and rows are the integer number of cells horizontally and
     vertically.
@@ -39,7 +49,7 @@ def split_sheet(sheet, size, columns, rows):
     subsurfaces = []
     for y in range(rows):
         row = []
-        for x in range(columns): 
+        for x in range(columns):
             rect = pg.Rect((x*size[0], y*size[1]), size)
             row.append(sheet.subsurface(rect))
         subsurfaces.append(row)
