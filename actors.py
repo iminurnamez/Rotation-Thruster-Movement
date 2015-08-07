@@ -6,7 +6,6 @@ import math
 import pygame as pg
 import prepare
 import angles
-import lazer_beam
 import cargo_prices
 TWOPI = 2 * math.pi
 
